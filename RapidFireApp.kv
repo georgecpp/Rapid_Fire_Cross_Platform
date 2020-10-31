@@ -1,0 +1,110 @@
+#:import utils kivy.utils
+#:include RapidFireGame
+#:include Target
+#:include RapidFireApp
+
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'Play'
+            on_press: root.manager.current = 'play'
+        Button:
+            text: 'Settings'
+            on_press: root.manager.current = 'settings'
+        Button:
+            text: 'Quit'
+            on_press: app.stop()
+
+
+<SettingsScreen>:
+    BoxLayout:
+        Label:
+            text: 'Welcome to settings screen, here we will adjust levels difficulty!'
+        Button:
+            text: 'Back to menu'
+            on_press: root.manager.current = 'menu'
+            size_hint: 0.2,0.2
+
+
+<PlayScreen>:
+    rapid_fire_game : rapid_game
+    BoxLayout:
+        id: mainframe
+        orientation: 'vertical'
+        height: root.height
+        width: root.width
+        BoxLayout:
+            id: topFrame
+            size_hint : (1,0.75)
+            canvas:
+                Color:
+                    rgb: utils.get_color_from_hex('#77b5fe')
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            RapidFireGame:
+                top_frame : topFrame
+                main_frame: mainframe
+                id: rapid_game
+        AnchorLayout:
+            id: bottomFrame
+            size_hint : (1,0.25)
+            padding: [0,0,180,0]
+            anchor_x: 'left'
+            anchor_y: 'bottom'
+            AnchorLayout:
+                anchor_y: 'bottom'
+                anchor_x: 'left'
+                Label:
+                    id: time_label
+                    text: 'Time: '
+                    size_hint: 0.1, 0.1
+            AnchorLayout:
+                anchor_y: 'bottom'
+                anchor_x: 'center'
+                Label:
+                    id: score_label
+                    text: 'Score: ' + str(root.rapid_fire_game.score)
+                    size_hint: 0.1, 0.1
+            AnchorLayout:
+                padding: [0,0,20,0]
+                anchor_y: 'bottom'
+                anchor_x: 'right'
+                Label:
+                    id: score_up_label
+                    text: 'Score to level up: ' + str(root.rapid_fire_game.score_to_lvl_up)
+                    size_hint: 0.1, 0.1
+
+            AnchorLayout:
+                padding: [0,0,-175,0]
+                anchor_y: 'bottom'
+                anchor_x: 'right'
+                Button:
+                    id: btn_back
+                    text: 'Back to menu'
+                    size_hint: 0.1, 0.1
+                    on_press:
+                        root.manager.current = 'menu'
+                        root.rapid_fire_game.score = 0
+                        root.rapid_fire_game.curr_level=1
+                        root.rapid_fire_game.score_to_lvl_up = 300
+
+            AnchorLayout:
+                padding: [180,0,0,0]
+                anchor_y: 'center'
+                anchor_x: 'center'
+                Label:
+                    id: current_level_label
+                    pos_hint: root.center_x, root.center_y
+                    text: 'Current level: ' + str(root.rapid_fire_game.curr_level)
+                    size_hint: 0.1, 0.1
+
+<Target>:
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'concentric-circles.png'
+
+
