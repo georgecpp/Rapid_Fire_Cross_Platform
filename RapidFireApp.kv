@@ -44,9 +44,15 @@
                     size: self.size
                     pos: self.pos
             RapidFireGame:
+                level_up : level_up
                 top_frame : topFrame
                 main_frame: mainframe
                 id: rapid_game
+            Label:
+                id: level_up
+                pos:  root.center
+                text: 'You Leveled up!'
+                opacity: 0
         AnchorLayout:
             id: bottomFrame
             size_hint : (1,0.25)
@@ -58,7 +64,7 @@
                 anchor_x: 'left'
                 Label:
                     id: time_label
-                    text: 'Time: '
+                    text: 'Time: ' + str(root.rapid_fire_game.timer_val)
                     size_hint: 0.1, 0.1
             AnchorLayout:
                 anchor_y: 'bottom'
@@ -86,9 +92,8 @@
                     size_hint: 0.1, 0.1
                     on_press:
                         root.manager.current = 'menu'
-                        root.rapid_fire_game.score = 0
-                        root.rapid_fire_game.curr_level=1
-                        root.rapid_fire_game.score_to_lvl_up = 300
+                        root.rapid_fire_game.event.cancel()
+                        root.rapid_fire_game.eventTick.cancel()
 
             AnchorLayout:
                 padding: [180,0,0,0]
@@ -102,7 +107,7 @@
 
 <Target>:
     canvas:
-        Rectangle:
+        Ellipse:
             pos: self.pos
             size: self.size
             source: 'concentric-circles.png'
