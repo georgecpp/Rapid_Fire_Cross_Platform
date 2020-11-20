@@ -2,15 +2,16 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.properties import ObjectProperty, NumericProperty, ListProperty, ReferenceListProperty, BooleanProperty
 from kivy.clock import Clock
 from kivy.vector import Vector
 from random import randint
 import random
+from kivy.utils import get_color_from_hex
 from kivy.core.audio import SoundLoader
 
 Builder.load_file("RapidFireApp.kv")
-sound = SoundLoader.load('crazytrain.mp3')
 
 
 # Declare both screens
@@ -27,12 +28,40 @@ class PlayScreen(Screen):
                                                              1 / self.rapid_fire_game.spawn_time)
 
 
-class MenuScreen(Screen):
+sound = SoundLoader.load('crazytrain.ogg')
+
+
+class LeaderScreen(Screen):
     pass
+
+
+class MenuScreen(Screen):
+    player_name_input = ObjectProperty(None)
+    btn_play = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(MenuScreen, self).__init__(**kwargs)
+        sound.play()
+        self.player_name_input.bind(text=self.enable_play)
+
+    def enable_play(self, instance, text):
+        if text != '':
+            self.btn_play.disabled = False
+        else:
+            self.btn_play.disabled = True
 
 
 class SettingsScreen(Screen):
-    pass
+    toggle_music = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(SettingsScreen, self).__init__(**kwargs)
+
+    def on_state(self, state):
+        if state == 'down':
+            sound.volume = 0.0
+        else:
+            sound.volume = 1.0
 
 
 class Target(Widget):
@@ -47,7 +76,7 @@ class Target(Widget):
     def __init__(self, **kwargs):
         super(Target, self).__init__(**kwargs)
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, touch):  # on_touch_down!
         if self.collide_point(*touch.pos):
             self.shoot = True
             self.pressed = touch.pos
@@ -78,7 +107,20 @@ class Target(Widget):
                     self.parent.update_new_level()
                     # UPDATE ALL - SCORE_LVL UP +=100, SPEED_TARGETS, SPAWN TIME!!!!! - CLOCK BACK TO 60.
 
+            # pop up score next to target!
+            label = Label()
+            label.id = 'score2go'
+            label.x = self.pos[0]
+            label.y = self.pos[1]
+            if self.score_range == 20:
+                label.color = get_color_from_hex('#ff0000')
+            label.text = str(self.score_range)
+            self.parent.add_widget(label)
+
             self.parent.remove_widget(self)
+            return True
+        else:
+            return super(Target, self).on_touch_down(touch)
 
     # Latest position = Current velocity + Current position
     def move(self):
@@ -94,6 +136,7 @@ class Target(Widget):
 
 
 class RapidFireGame(Widget):
+    label = ObjectProperty(None)
     top_frame = ObjectProperty(None)
     main_frame = ObjectProperty(None)
     curr_level = NumericProperty(1)
@@ -134,33 +177,35 @@ class RapidFireGame(Widget):
         self.curr_level += 1
         self.score_to_lvl_up = self.copy_score_lvl_up + 100
         self.copy_score_lvl_up += 100
-        self.speed_target += 1.0
+        self.speed_target += 0.5
 
         # for spawn time modified of targets.
         self.event.cancel()
-        self.spawn_time += 1.5
+        self.spawn_time += 1.0
         self.event = Clock.schedule_interval(self.appear_target, 1 / self.spawn_time)
 
     def update_timer(self, *args):
+        self.timer_val -= 1
+        for label in list(self.children):
+            if isinstance(label, Label) and label.id == 'score2go':
+                self.remove_widget(label)
         if self.timer_val == 0:  # verify score to level up. if > 0, you lost.
             if self.score_to_lvl_up >= 0:
                 self.event.cancel()
                 self.eventTick.cancel()
                 return
-        self.timer_val -= 1
 
 
 sm = ScreenManager()
 sm.add_widget(MenuScreen(name='menu'))
 sm.add_widget(PlayScreen(name='play'))
 sm.add_widget(SettingsScreen(name='settings'))
+sm.add_widget(LeaderScreen(name='leader'))
 
 
 class RapidFireApp(App):
 
     def build(self):
-        if sound:
-            sound.play()
         return sm
 
 

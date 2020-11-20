@@ -4,27 +4,65 @@
 #:include RapidFireApp
 
 <MenuScreen>:
+    player_name_input : player_name_input
+    btn_play : btn_play
     BoxLayout:
         orientation: 'vertical'
+        Label:
+            text: '~~~ Rapid Fire ~~~'
+        GridLayout:
+            id: grLayout
+            cols: 2
+            row_force_default: True
+            row_default_height: 40
+            spacing: 10
+            padding: 20
+            Label:
+                text: 'Player Name: '
+            TextInput:
+                id: player_name_input
+
         Button:
+            id: btn_play
             text: 'Play'
+            disabled: True
             on_press: root.manager.current = 'play'
         Button:
+            id: btn_settings
             text: 'Settings'
             on_press: root.manager.current = 'settings'
         Button:
+            id: btn_leader
+            text: 'Leaderboard'
+            on_press: root.manager.current = 'leader'
+        Button:
+            id: btn_quit
             text: 'Quit'
             on_press: app.stop()
 
-
-<SettingsScreen>:
+<LeaderScreen>:
     BoxLayout:
+        orientation: 'horizontal'
         Label:
-            text: 'Welcome to settings screen, here we will adjust levels difficulty!'
+            text: 'Welcome to LeaderScreen, here you will see the leaderboard of players!'
         Button:
             text: 'Back to menu'
             on_press: root.manager.current = 'menu'
             size_hint: 0.2,0.2
+
+<SettingsScreen>:
+    toggle_music: toggle_music
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Welcome to settings screen, here we will adjust levels difficulty!'
+        ToggleButton:
+            id: toggle_music
+            text: 'Turn the music OFF/ON'
+            on_state: root.on_state(self.state)
+        Button:
+            text: 'Back to menu'
+            on_press: root.manager.current = 'menu'
 
 
 <PlayScreen>:
