@@ -6,61 +6,105 @@
 <MenuScreen>:
     player_name_input : player_name_input
     btn_play : btn_play
-    BoxLayout:
+    btn_quit : btn_quit
+    canvas.before:
+        Rectangle:
+            pos:self.pos
+            size:self.size
+            source: 'rapid_fire_bck.png'
+    FloatLayout:
         orientation: 'vertical'
         Label:
-            text: '~~~ Rapid Fire ~~~'
-        GridLayout:
-            id: grLayout
-            cols: 2
-            row_force_default: True
-            row_default_height: 40
-            spacing: 10
-            padding: 20
-            Label:
-                text: 'Player Name: '
-            TextInput:
-                id: player_name_input
-
-        Button:
-            id: btn_play
-            text: 'Play'
-            disabled: True
-            on_press: root.manager.current = 'play'
-        Button:
-            id: btn_settings
-            text: 'Settings'
-            on_press: root.manager.current = 'settings'
-        Button:
-            id: btn_leader
-            text: 'Leaderboard'
-            on_press: root.manager.current = 'leader'
-        Button:
-            id: btn_quit
-            text: 'Quit'
-            on_press: app.stop()
+            pos:root.width/2-150,root.height/2+50
+            size:150,50
+            size_hint:None,None
+            font_size: '30dp'
+            font_name: 'MISTRAL.TTF'
+            text: 'PLAYER NAME:'
+        TextInput:
+            font_size: '30dp'
+            font_name: 'MISTRAL.TTF'
+            pos:root.width/2+25,root.height/2+55
+            size:150,45
+            size_hint:None,None
+            id: player_name_input
+            background_color : utils.get_color_from_hex('#ffffff')
+            readonly: False
+        FloatLayout:
+            Button:
+                pos:root.width/2- self.width/2,260
+                size:150,50
+                size_hint: None,None
+                id: btn_play
+                text: 'Play'
+                disabled: True
+            Button:
+                pos:root.width/2- self.width/2,190
+                size:150,50
+                size_hint: None,None
+                id: btn_settings
+                text: 'Settings'
+                on_press: root.manager.current = 'settings'
+            Button:
+                pos:root.width/2 - self.width/2,120
+                size:150,50
+                size_hint: None,None
+                id: btn_leader
+                text: 'Leaderboard'
+                on_press: root.manager.current = 'leader'
+            Button:
+                pos:root.width/2 - self.width/2,50
+                size:150,50
+                size_hint: None,None
+                id: btn_quit
+                text: 'Quit'
+                #on_press: app.stop()
 
 <LeaderScreen>:
-    BoxLayout:
+    rapid_fire_game: rapid
+    leaderText: leaderText
+    canvas.before:
+        Rectangle:
+            pos:self.pos
+            size:self.size
+            source: 'background_leaderboard.png'
+    RapidFireGame:
+        id: rapid
+    FloatLayout:
+        size:root.size
         orientation: 'horizontal'
         Label:
-            text: 'Welcome to LeaderScreen, here you will see the leaderboard of players!'
+            pos:root.width/2 - self.width/2,root.height/2
+            size:150,50
+            size_hint: None,None
+            id: leaderText
+            font_size: '30dp'
         Button:
             text: 'Back to menu'
             on_press: root.manager.current = 'menu'
-            size_hint: 0.2,0.2
-
+            pos:root.width/2 - self.width/2,50
+            size:150,50
+            size_hint: None,None
 <SettingsScreen>:
     toggle_music: toggle_music
-    BoxLayout:
+    canvas.before:
+        Rectangle:
+            pos:self.pos
+            size:self.size
+            source: 'background_settings.png'
+    FloatLayout:
         orientation: 'vertical'
-        Label:
-            text: 'Welcome to settings screen, here we will adjust levels difficulty!'
         ToggleButton:
+            pos:root.width/2 - self.width/2,root.height/2
+            size:200,50
+            size_hint: None,None
             id: toggle_music
             text: 'Turn the music OFF/ON'
             on_state: root.on_state(self.state)
         Button:
+            pos:root.width/2 - self.width/2,root.height/2-100
+            size:200,50
+            size_hint: None,None
             text: 'Back to menu'
             on_press: root.manager.current = 'menu'
 
@@ -92,6 +136,11 @@
                 text: 'You Leveled up!'
                 opacity: 0
         AnchorLayout:
+            canvas.before:
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source:'bottom_bar.png'
             id: bottomFrame
             size_hint : (1,0.25)
             padding: [0,0,180,0]
@@ -102,14 +151,18 @@
                 anchor_x: 'left'
                 Label:
                     id: time_label
-                    text: 'Time: ' + str(root.rapid_fire_game.timer_val)
+                    text: 'TIME: ' + str(root.rapid_fire_game.timer_val)
                     size_hint: 0.1, 0.1
+                    font_size: '30dp'
+                    font_name: 'MISTRAL.TTF'
             AnchorLayout:
                 anchor_y: 'bottom'
                 anchor_x: 'center'
                 Label:
                     id: score_label
-                    text: 'Score: ' + str(root.rapid_fire_game.score)
+                    text: 'SCORE: ' + str(root.rapid_fire_game.score)
+                    font_size: '30dp'
+                    font_name: 'MISTRAL.TTF'
                     size_hint: 0.1, 0.1
             AnchorLayout:
                 padding: [0,0,20,0]
@@ -117,7 +170,9 @@
                 anchor_x: 'right'
                 Label:
                     id: score_up_label
-                    text: 'Score to level up: ' + str(root.rapid_fire_game.score_to_lvl_up)
+                    font_size: '30dp'
+                    font_name: 'MISTRAL.TTF'
+                    text: 'SCORE TO LEVEL UP: ' + str(root.rapid_fire_game.score_to_lvl_up)
                     size_hint: 0.1, 0.1
 
             AnchorLayout:
@@ -140,7 +195,9 @@
                 Label:
                     id: current_level_label
                     pos_hint: root.center_x, root.center_y
-                    text: 'Current level: ' + str(root.rapid_fire_game.curr_level)
+                    font_size: '30dp'
+                    font_name: 'MISTRAL.TTF'
+                    text: 'CURRENT LEVEL: ' + str(root.rapid_fire_game.curr_level)
                     size_hint: 0.1, 0.1
 
 <Target>:
@@ -148,6 +205,6 @@
         Ellipse:
             pos: self.pos
             size: self.size
-            source: 'concentric-circles.png'
+            source: str(self.N_target)+'.png'
 
 
